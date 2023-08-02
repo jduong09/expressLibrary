@@ -1,0 +1,27 @@
+html
+  head
+    meta(charset= 'UTF-8')
+    meta(
+      name= 'viewport'
+      content= 'width=device-width, initial-scale=1.0'
+      )
+    title= title
+    link(rel= 'stylesheet' type= 'text/css' href= './css/meyers_reset.css')
+    link(rel= 'stylesheet' type= 'text/css' href= './css/styles.css')
+    script(type= 'text/javascript' src='eventListeners.js')
+  body
+    header
+      h1= 'Books'
+    main
+      div(class = 'container-book-new')
+          button(id= 'btn-new' type= 'button')= 'New Book'
+      div(class= 'container-books')
+        ul
+          each book in books
+            li(data-id= book.uuid class= 'li-book')
+              h2= book.title
+              div= book.author
+              div= `${book.pages} pages`
+              div(class= 'container-btns')
+                button(class= 'btn-edit' type= 'button')= 'Edit'
+                button(class= 'btn-delete' type= 'button')= 'Delete'

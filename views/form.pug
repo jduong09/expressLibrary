@@ -1,0 +1,23 @@
+html
+  head
+    meta(charset= 'UTF-8')
+    meta(
+      name= 'viewport'
+      content= 'width=device-width, initial-scale=1.0'
+      )
+    title= title
+    link(rel= 'stylesheet' type= 'text/css' href= '../../css/meyers_reset.css')
+    link(rel= 'stylesheet' type= 'text/css' href= '../../css/styles.css')
+  body
+    header
+      h1= formTitle
+    main
+      div(class= 'container-form')
+        form(id= 'form-book' method= 'POST' action= book ? `/books/${book.id}/update` : '/book/new')
+          label(for= 'input-title')= 'Title: '
+            input(type= 'text' id= 'input-title' name= 'title' placeholder= 'And Then There Were None' value= book ? book.title : '')
+          label(for= 'input-author')= 'Author: '
+            input(type= 'text' id= 'input-author' name= 'author' placeholder= 'Agatha Cristie' value= book ? book.author : '')
+          label(for= 'input-pages')= 'Pages: '
+            input(type= 'number' id= 'input-pages' name= 'pages' placeholder= '256' value= book ? book.pages : '')
+          button(type= 'submit' id= 'btn-submit')= book ? 'Update Book' : 'Add Book'

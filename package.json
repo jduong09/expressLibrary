@@ -1,0 +1,17 @@
+{
+  "name": "expresslibrary",
+  "version": "1.0.0",
+  "description": "Library Inventory using Express",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Justin Duong",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongodb": "^5.7.0",
+    "pug": "^3.0.2"
+  }
+}

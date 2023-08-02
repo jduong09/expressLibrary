@@ -1,0 +1,83 @@
+header, main {
+  padding: 2rem;
+}
+
+header {
+  border-bottom: 2px solid black;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.container-book-new {
+  margin-bottom: 1rem;
+}
+
+.container-books > ul {
+  display: grid;
+  grid-template-rows: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.li-book {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 2px solid black;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.li-book > h2, .li-book > div {
+  margin-bottom: .5rem;
+}
+
+.li-book > h2 {
+  text-align: center;
+  font-size: 1.75rem;
+}
+
+.container-btns {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+
+.container-btns > button, #btn-new {
+  padding: .5rem 1rem;
+  border: 1px solid black;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Form PUG */
+.container-form {
+  border: 2px solid black;
+  padding: 2rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form > label {
+  margin-bottom: .5rem;
+  font-weight: 500;
+  width: 100%;
+}
+
+label > input {
+  padding: .5rem 1rem;
+}
+
+#btn-submit {
+  padding: .75rem 1.5rem;
+  border: 2px solid black;
+  font-weight: 700;
+}
