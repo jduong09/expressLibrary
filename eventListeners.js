@@ -23,10 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
     btnsEdit[i].addEventListener('click', (e) => {
       e.preventDefault();
 
+      console.log(window.location);
+
       const parentEle = e.currentTarget.parentElement.parentElement;
       const dataId = parentEle.getAttribute('data-id');
 
-      window.location = `/books/${dataId}/update`;
+      //window.location = `/books/${dataId}/update`;
     });
   }
 
@@ -56,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const collectionName = e.currentTarget.getAttribute('data-collection-name');
       console.log('making fetch request');
-      fetch(`/collections/${collectionName}`);
+      window.location = (`/?collection=${collectionName}`);
     });
   }
 });

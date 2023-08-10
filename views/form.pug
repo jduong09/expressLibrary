@@ -20,4 +20,9 @@ html
             input(type= 'text' id= 'input-author' name= 'author' placeholder= 'Agatha Cristie' value= book ? book.author : '')
           label(for= 'input-pages')= 'Pages: '
             input(type= 'number' id= 'input-pages' name= 'pages' placeholder= '256' value= book ? book.pages : '')
+          label(for= "collections-select")= 'Choose a collection: '
+            select(name= "collection" id= "collections-select")
+              option(value= "")= '--Please choose an option--'
+              each collection in collections
+                option(value= collection)= collection
           button(type= 'submit' id= 'btn-submit')= book ? 'Update Book' : 'Add Book'

@@ -20,20 +20,20 @@ html
             each collection in collections
               li(class= 'li-collection')
                 button(class='btn-collection' data-collection-name=`${collection}`)= collection
-        div(class= 'container-books')
+        div(class= 'wrapper-books')
           div(id= 'books-header')
-            h2(id= `header-collection-${currentCollection}`)= currentCollection
+            h2(id= `header-collection`)= currentCollection
             button(id= 'btn-book-new' type= 'button')= 'New Book'
-
-          ul
-            each book in books
-              li(data-id= book.uuid class= 'li-book')
-                h2= book.title
-                div= book.author
-                div= `${book.pages} pages`
-                div(class= 'container-btns')
-                  button(class= 'btn-edit' type= 'button')= 'Edit'
-                  button(class= 'btn-delete' type= 'button')= 'Delete'
+          div(class= 'container-books')
+            ul
+              each book in books
+                li(data-id= book.uuid class= 'li-book')
+                  h2= book.title
+                  div= book.author
+                  div= `${book.pages} pages`
+                  div(class= 'container-btns')
+                    button(class= 'btn-edit' type= 'button')= 'Edit'
+                    button(class= 'btn-delete' type= 'button')= 'Delete'
         div(id= 'div-modal-collection' class= 'hide')
           h3= 'New Collection'
           form(id= 'form-collection-create' method= 'POST' action= '/collections/new')

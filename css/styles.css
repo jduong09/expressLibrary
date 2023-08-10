@@ -1,5 +1,10 @@
 body {
   min-height: 100vh;
+  font-family: sans-serif;
+}
+
+.hide {
+  display: none !important;
 }
 
 .div-wrapper {
@@ -33,12 +38,29 @@ aside {
   text-align: center;
 }
 
-#btn-new {
+#btn-collection-new {
   margin-bottom: 1rem;
 }
 
-.container-books {
+.wrapper-books {
   flex: 2 80%;
+}
+
+#books-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  border-bottom: 2px solid black;
+}
+
+#header-collection {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+
+.container-books {
   padding: 2rem;
 }
 
@@ -65,7 +87,7 @@ aside {
 
 .li-book > h2 {
   text-align: center;
-  font-size: 1.75rem;
+  font-size: 1.25rem;
 }
 
 .container-btns {
@@ -74,7 +96,7 @@ aside {
   margin-bottom: 0;
 }
 
-.container-btns > button, #btn-new {
+.container-btns > button, #btn-book-new, #btn-collection-new {
   padding: .5rem 1rem;
   border: 1px solid black;
   font-weight: 500;

@@ -30,8 +30,15 @@ app.post('/book/new', async (req, res) => {
   const db = client.db('expressLibrary');
 
   try {
-    await db.collection('Books').insertOne({ title: req.body.title, author: req.body.author, pages: req.body.pages });
-
+    if (req.body.collection) {
+      await db.collection(req.body.collection).insertOne({ title: req.body.title, author: req.body.author, pages: req.body.pages, collection: req.body.collection });
+    } else {
+      await db.collection('Fiction').insertOne({ title: req.body.title, author: req.body.author, pages: req.body.pages, collection: 'Fiction' });
+    }
+    // title (string)
+    // author (string)
+    // pages (integer)
+    // collection (string)
     res.redirect('/');
   } catch(err) {
     console.log(err);
@@ -45,47 +52,78 @@ app.post('/book/new', async (req, res) => {
 
 // Query All Books
 app.get('/', async (req, res) => {
+  const collection = req.query.collection || 'Fiction';
   await client.connect();
 
   const db = await client.db('expressLibrary');
+
+  // Getting all collection names
   const collectionNames = [];
   await db.listCollections().toArray().then(data => {
     data.forEach(collection => collectionNames.push(collection.name));
   });
 
-  const libraryCursor = db.collection('Books').find();
+  // Getting all books in specific collection
+  const libraryCursor = db.collection(collection).find();
 
   const books = [];
-
-  for await (const book of libraryCursor) {
-    books.push({
-      uuid: book._id.toString(),
-      title: book.title,
-      author: book.author,
-      pages: book.pages
-    });
+  if (req.query.collection) {
+    for await (const book of libraryCursor) {
+      books.push({
+        uuid: book._id.toString(),
+        title: book.title,
+        author: book.author,
+        pages: book.pages,
+        collection: book.collection
+      });
+    }
+  } else {
+    // Getting all books in database
+    const libraryCollections = db.listCollections();
+    for await (const collectionCursor of libraryCollections) {
+      const listCollectionCursor = db.collection(collectionCursor.name).find();
+      for await (const book of listCollectionCursor) {
+        books.push({
+          uuid: book._id.toString(),
+          title: book.title,
+          author: book.author,
+          pages: book.pages,
+          collection: book.collection
+        });
+      }
+    }
   }
 
   await client.close();
-  await res.render('index', { title: 'Index', books: books, collections: collectionNames, currentCollection: 'Books' });
+  await res.render('index', { title: 'Library', books: books, collections: collectionNames, currentCollection: req.query.collection || 'Books' });
 });
 
 // Get New Book Form
 app.get('/book/new', async (req, res) => {
-  await res.render('form', { title: 'New Book', formTitle: 'New Book' });
+  await client.connect();
+
+  const db = await client.db('expressLibrary');
+
+  const collectionNames = [];
+  await db.listCollections().toArray().then(data => {
+    data.forEach(collection => collectionNames.push(collection.name));
+  });
+
+  await res.render('form', { title: 'New Book', formTitle: 'New Book', collections: collectionNames });
 });
 
 // Get book update Form
-app.get('/books/:bookId/update', async (req, res) => {
+app.get('/:collectionName/:bookId/update', async (req, res) => {
   await client.connect();
   const db = await client.db('expressLibrary');
-  const book = await db.collection('books').findOne({ _id: new ObjectId(req.params.bookId) });
+  const book = await db.collection(req.params.collectionName).findOne({ _id: new ObjectId(req.params.bookId) });
 
   const bookData = {
     id: req.params.bookId,
     title: book.title,
     author: book.author,
-    pages: book.pages
+    pages: book.pages,
+    collection: book.collection
   };
 
   res.render('form', { title: 'Update Book', formTitle: 'Update Book', book: bookData });
@@ -97,13 +135,14 @@ app.post('/books/:bookId/update', async (req, res) => {
     $set: {
       title: req.body.title,
       author: req.body.author,
-      pages: req.body.pages
+      pages: req.body.pages,
+      collection: req.body.collection
     }
   };
 
   await client.connect();
   const db = await client.db('expressLibrary');
-  await db.collection('books').updateOne({ _id: new ObjectId(req.params.bookId) }, bookData);
+  await db.collection(req.body.collection).updateOne({ _id: new ObjectId(req.params.bookId) }, bookData);
 
   res.redirect('/');
 });
@@ -111,7 +150,7 @@ app.post('/books/:bookId/update', async (req, res) => {
 app.delete('/books/:bookId', async (req, res) => {
   await client.connect();
   const db = await client.db('expressLibrary');
-  await db.collection('books').deleteOne({ _id: new ObjectId(req.params.bookId) });
+  await db.deleteOne({ _id: new ObjectId(req.params.bookId) });
 
   res.json({ message: 'success' });
 });

@@ -24,36 +24,6 @@ collectionsRouter.post('/new', async (req, res) => {
   res.redirect('http://localhost:3000/');
 });
 // Read
-// Read all Books from collections
-collectionsRouter.get('/:collectionName', async (req, res) => {
-  const collectionName = req.params.collectionName;
-
-  await client.connect();
-
-  const db = await client.db('expressLibrary');
-
-  const collectionNames = [];
-  await db.listCollections().toArray().then(data => {
-    data.forEach(collection => collectionNames.push(collection.name));
-  });
-
-  const booksCursor = await db.collection(collectionName).find();
-  const responseBooks = [];
-
-  for await (const book of booksCursor) {
-    responseBooks.push({
-      uuid: book._id.toString(),
-      title: book.title,
-      author: book.author,
-      pages: book.pages
-    });
-  }
-
-  console.log(responseBooks);
-
-  res.render('index', { title: 'Index', books: responseBooks, collections: collectionNames, currentCollection: collectionName});
-});
-
 // Update
 // Delete
 
