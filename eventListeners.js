@@ -1,13 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const btnNew = document.getElementById('btn-new');
+  const btnCollectionNew = document.getElementById('btn-collection-new');
+  const btnBookNew = document.getElementById('btn-book-new');
   const btnsEdit = document.getElementsByClassName('btn-edit');
   const btnsDelete = document.getElementsByClassName('btn-delete');
+  const btnsCollection = document.getElementsByClassName('btn-collection');
 
   // const btnSubmit = document.getElementById('btn-submit');
-
-  btnNew.addEventListener('click', (e) => {
+  btnCollectionNew.addEventListener('click', (e) => {
     e.preventDefault();
+    const modalCollection = document.getElementById('div-modal-collection');
 
+    modalCollection.classList.remove('hide');
+    // open Collection modal?
+  });
+
+  btnBookNew.addEventListener('click', (e) => {
+    e.preventDefault();
     window.location = '/book/new';
   });
 
@@ -39,6 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(data.message);
           }
         });
+    });
+  }
+
+  for (let k = 0; k < btnsCollection.length; k++) {
+    btnsCollection[k].addEventListener('click', (e) => {
+      e.preventDefault();
+
+      const collectionName = e.currentTarget.getAttribute('data-collection-name');
+      console.log('making fetch request');
+      fetch(`/collections/${collectionName}`);
     });
   }
 });

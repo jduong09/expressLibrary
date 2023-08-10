@@ -10,18 +10,33 @@ html
     link(rel= 'stylesheet' type= 'text/css' href= './css/styles.css')
     script(type= 'text/javascript' src='eventListeners.js')
   body
-    header
-      h1= 'Books'
-    main
-      div(class = 'container-book-new')
-          button(id= 'btn-new' type= 'button')= 'New Book'
-      div(class= 'container-books')
-        ul
-          each book in books
-            li(data-id= book.uuid class= 'li-book')
-              h2= book.title
-              div= book.author
-              div= `${book.pages} pages`
-              div(class= 'container-btns')
-                button(class= 'btn-edit' type= 'button')= 'Edit'
-                button(class= 'btn-delete' type= 'button')= 'Delete'
+    div(class= 'div-wrapper')
+      header
+        h1= 'expressLibrary'
+      main
+        aside
+          button(id= 'btn-collection-new' type= 'button')= 'New Collection'
+          ul
+            each collection in collections
+              li(class= 'li-collection')
+                button(class='btn-collection' data-collection-name=`${collection}`)= collection
+        div(class= 'container-books')
+          div(id= 'books-header')
+            h2(id= `header-collection-${currentCollection}`)= currentCollection
+            button(id= 'btn-book-new' type= 'button')= 'New Book'
+
+          ul
+            each book in books
+              li(data-id= book.uuid class= 'li-book')
+                h2= book.title
+                div= book.author
+                div= `${book.pages} pages`
+                div(class= 'container-btns')
+                  button(class= 'btn-edit' type= 'button')= 'Edit'
+                  button(class= 'btn-delete' type= 'button')= 'Delete'
+        div(id= 'div-modal-collection' class= 'hide')
+          h3= 'New Collection'
+          form(id= 'form-collection-create' method= 'POST' action= '/collections/new')
+            label(for= 'input-collection-name')= 'Name: '
+              input(type= 'text' id= 'input-collection-name' name= 'name' placeholder= 'Fiction, Non-fiction...')
+            button(type = 'submit' id='btn-submit')= 'Add Collection'

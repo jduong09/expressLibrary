@@ -2,6 +2,8 @@ const express = require('express');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
+const collectionRouter = require('./routes/collection');
+
 const app = express();
 const port = 3000;
 const mongoConnection = process.env.uri;
@@ -18,7 +20,6 @@ app.set('view engine', 'pug');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
-
 // Database Name: 'expressLibrary'
 // Collection: 'Fiction'
 // Collection: 'NonFiction'
@@ -29,7 +30,7 @@ app.post('/book/new', async (req, res) => {
   const db = client.db('expressLibrary');
 
   try {
-    await db.collection('books').insertOne({ title: req.body.title, author: req.body.author, pages: req.body.pages });
+    await db.collection('Books').insertOne({ title: req.body.title, author: req.body.author, pages: req.body.pages });
 
     res.redirect('/');
   } catch(err) {
@@ -47,7 +48,12 @@ app.get('/', async (req, res) => {
   await client.connect();
 
   const db = await client.db('expressLibrary');
-  const libraryCursor = db.collection('books').find();
+  const collectionNames = [];
+  await db.listCollections().toArray().then(data => {
+    data.forEach(collection => collectionNames.push(collection.name));
+  });
+
+  const libraryCursor = db.collection('Books').find();
 
   const books = [];
 
@@ -61,7 +67,7 @@ app.get('/', async (req, res) => {
   }
 
   await client.close();
-  await res.render('index', { title: 'Index', books: books });
+  await res.render('index', { title: 'Index', books: books, collections: collectionNames, currentCollection: 'Books' });
 });
 
 // Get New Book Form
@@ -109,6 +115,8 @@ app.delete('/books/:bookId', async (req, res) => {
 
   res.json({ message: 'success' });
 });
+
+app.use('/collections', collectionRouter);
 
 // Listen Port
 app.listen(port, () => {
