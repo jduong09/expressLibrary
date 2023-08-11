@@ -31,9 +31,9 @@ app.post('/book/new', async (req, res) => {
 
   try {
     if (req.body.collection) {
-      await db.collection(req.body.collection).insertOne({ title: req.body.title, author: req.body.author, pages: req.body.pages, collection: req.body.collection });
+      await db.collection(req.body.collection).insertOne({ title: req.body.title, author: req.body.author, pages: req.body.pages });
     } else {
-      await db.collection('Fiction').insertOne({ title: req.body.title, author: req.body.author, pages: req.body.pages, collection: 'Fiction' });
+      await db.collection('Fiction').insertOne({ title: req.body.title, author: req.body.author, pages: req.body.pages });
     }
     // title (string)
     // author (string)
@@ -74,7 +74,6 @@ app.get('/', async (req, res) => {
         title: book.title,
         author: book.author,
         pages: book.pages,
-        collection: book.collection
       });
     }
   } else {
@@ -87,8 +86,7 @@ app.get('/', async (req, res) => {
           uuid: book._id.toString(),
           title: book.title,
           author: book.author,
-          pages: book.pages,
-          collection: book.collection
+          pages: book.pages
         });
       }
     }
@@ -113,20 +111,33 @@ app.get('/book/new', async (req, res) => {
 });
 
 // Get book update Form
-app.get('/:collectionName/:bookId/update', async (req, res) => {
+app.get('/books/:bookId/update', async (req, res) => {
   await client.connect();
+
   const db = await client.db('expressLibrary');
-  const book = await db.collection(req.params.collectionName).findOne({ _id: new ObjectId(req.params.bookId) });
+  const collectionNames = [];
+  await db.listCollections().toArray().then(data => {
+    data.forEach(collection => {
+      collectionNames.push(collection.name);
+    });
 
-  const bookData = {
-    id: req.params.bookId,
-    title: book.title,
-    author: book.author,
-    pages: book.pages,
-    collection: book.collection
-  };
+  });
 
-  res.render('form', { title: 'Update Book', formTitle: 'Update Book', book: bookData });
+  let bookResult;
+  for (let i = 0; i < collectionNames.length; i++) {
+    const result = await db.collection(collectionNames[i]).findOne({ _id: new ObjectId(req.params.bookId )});
+    if (result) {
+      bookResult = {
+        id: result._id.toString(),
+        title: result.title,
+        author: result.author,
+        pages: result.pages,
+        collection: collectionNames[i]
+      };
+    }
+  }
+
+  res.render('form', { title: 'Update Book', formTitle: 'Update Book', book: bookResult, collections: collectionNames });
 });
 
 // Update
@@ -136,7 +147,6 @@ app.post('/books/:bookId/update', async (req, res) => {
       title: req.body.title,
       author: req.body.author,
       pages: req.body.pages,
-      collection: req.body.collection
     }
   };
 

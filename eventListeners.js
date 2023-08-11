@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnsEdit = document.getElementsByClassName('btn-edit');
   const btnsDelete = document.getElementsByClassName('btn-delete');
   const btnsCollection = document.getElementsByClassName('btn-collection');
+  const divBackground = document.getElementById('div-background');
 
   // const btnSubmit = document.getElementById('btn-submit');
   btnCollectionNew.addEventListener('click', (e) => {
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalCollection = document.getElementById('div-modal-collection');
 
     modalCollection.classList.remove('hide');
+    divBackground.classList.remove('hide');
     // open Collection modal?
   });
 
@@ -23,12 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btnsEdit[i].addEventListener('click', (e) => {
       e.preventDefault();
 
-      console.log(window.location);
-
       const parentEle = e.currentTarget.parentElement.parentElement;
       const dataId = parentEle.getAttribute('data-id');
 
-      //window.location = `/books/${dataId}/update`;
+      window.location = `/books/${dataId}/update`;
     });
   }
 

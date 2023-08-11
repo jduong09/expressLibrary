@@ -1,4 +1,5 @@
 body {
+  position: relative;
   min-height: 100vh;
   font-family: sans-serif;
 }
@@ -31,6 +32,8 @@ main {
   height: 100%;
 }
 
+/* Aside: list of collections in database */
+
 aside {
   flex: 2 20%;
   border-right: 2px solid black;
@@ -41,6 +44,12 @@ aside {
 #btn-collection-new {
   margin-bottom: 1rem;
 }
+
+.li-collection {
+  margin-bottom: .5rem;
+}
+
+/* Div: list of books of selected collection */
 
 .wrapper-books {
   flex: 2 80%;
@@ -128,4 +137,33 @@ label > input {
   padding: .75rem 1.5rem;
   border: 2px solid black;
   font-weight: 700;
+}
+
+/* New Collection Modal */
+#div-modal-collection {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid black;
+  z-index: 5;
+  padding: 1rem;
+  background-color: white;
+}
+
+#div-modal-collection > h3 {
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+#div-background {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  background-color: hsla(0, 0%, 0%, .5);
 }
