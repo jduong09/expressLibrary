@@ -1,7 +1,6 @@
 const express = require('express');
 require('dotenv').config();
 const mongoose = require('mongoose');
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const Author = require('./models/author');
 const Genre = require('./models/genre');
 const Book = require('./models/book');
@@ -52,11 +51,6 @@ app.post('/book/new', async (req, res) => {
       genre: [genre._id]
     });
     await newBook.save();
-    // await db.collection('Book').insertOne({ title: req.body.title, author: req.body.author, pages: req.body.pages });
-    // title (string)
-    // author (string)
-    // pages (integer)
-    // collection (string)
     res.redirect('/');
   } catch(err) {
     console.log(err);
@@ -72,13 +66,30 @@ app.get('/', async (req, res) => {
   await mongoose.connect(mongoConnection);
   // Aside will show all genres.
   const allGenres = await Genre.find({});
-
   const namesOfGenres = allGenres.map((genre) => {
     return genre.name;
-  })
-  const allBooks = await Book.find({});
-  
-  const arrayBooks = await Promise.all(allBooks.map(async (book) => {
+  });
+  // Getting all books in specific collection
+  let arrayBooks;
+
+  if (req.query.collection) {
+    const genre = await Genre.findOne({ name: req.query.collection });
+    const allBooksByGenre = await Book.find({ genre: [genre._id] })
+    arrayBooks = await Promise.all(allBooksByGenre.map(async (book) => {
+      const author = await Author.findById(book.author)
+        .then((data) => {
+          return `${data.first_name} ${data.family_name}`;
+        });
+      return {
+        uuid: book._id.toString(),
+        title: book.title,
+        author,
+        pages: book.pages
+      }
+    }));
+  } else {
+    const allBooks = await Book.find({});
+    arrayBooks = await Promise.all(allBooks.map(async (book) => {
     const author = await Author.findById(book.author).then((data) => {
       return `${data.first_name} ${data.family_name}`;
     });
@@ -89,19 +100,9 @@ app.get('/', async (req, res) => {
       pages: book.pages,
     }
   }));
+  }
   /*
-  // Getting all books in specific collection
-
-  if (req.query.collection) {
-    for await (const book of libraryCursor) {
-      books.push({
-        uuid: book._id.toString(),
-        title: book.title,
-        author: book.author,
-        pages: book.pages,
-      });
-    }
-  } else {
+  else {
     // Getting all books in database
     const libraryCollections = db.listCollections();
     for await (const collectionCursor of libraryCollections) {
@@ -117,8 +118,6 @@ app.get('/', async (req, res) => {
     }
   }
   */
-
-  // await client.close();
   await res.render('index', { title: 'Library', books: arrayBooks, genres: namesOfGenres, currentCollection: req.query.collection || 'Books' });
 });
 
