@@ -66,9 +66,7 @@ app.get('/', async (req, res) => {
   await mongoose.connect(mongoConnection);
   // Aside will show all genres.
   const allGenres = await Genre.find({});
-  const namesOfGenres = allGenres.map((genre) => {
-    return genre.name;
-  });
+  const namesOfGenres = allGenres.map(genre => genre.name);
   // Getting all books in specific collection
   let arrayBooks;
 
@@ -90,34 +88,17 @@ app.get('/', async (req, res) => {
   } else {
     const allBooks = await Book.find({});
     arrayBooks = await Promise.all(allBooks.map(async (book) => {
-    const author = await Author.findById(book.author).then((data) => {
-      return `${data.first_name} ${data.family_name}`;
-    });
-    return {
-      uuid: book._id.toString(),
-      title: book.title,
-      author: author,
-      pages: book.pages,
-    }
-  }));
-  }
-  /*
-  else {
-    // Getting all books in database
-    const libraryCollections = db.listCollections();
-    for await (const collectionCursor of libraryCollections) {
-      const listCollectionCursor = db.collection(collectionCursor.name).find();
-      for await (const book of listCollectionCursor) {
-        books.push({
-          uuid: book._id.toString(),
-          title: book.title,
-          author: book.author,
-          pages: book.pages
-        });
+      const author = await Author.findById(book.author).then((data) => {
+        return `${data.first_name} ${data.family_name}`;
+      });
+      return {
+        uuid: book._id.toString(),
+        title: book.title,
+        author: author,
+        pages: book.pages,
       }
-    }
+    }));
   }
-  */
   await res.render('index', { title: 'Library', books: arrayBooks, genres: namesOfGenres, currentCollection: req.query.collection || 'Books' });
 });
 
@@ -196,10 +177,9 @@ app.delete('/books/:bookId', async (req, res) => {
 
   res.json({ message: 'success' });
 });
-
+*/
 app.use('/collections', collectionRouter);
 
-*/
 // Listen Port
 app.listen(port, () => {
   console.log(`Library App Listening on port ${port}`);

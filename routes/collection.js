@@ -1,25 +1,18 @@
 const express = require('express');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const mongoose = require('mongoose');
+const Genre = require('../models/genre');
 
 const mongoConnection = process.env.uri;
-
-const client = new MongoClient(mongoConnection, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true
-  }
-});
 
 const collectionsRouter = express.Router();
 
 // Create
 collectionsRouter.post('/new', async (req, res) => {
-  const newCollectionName = req.body.name;
+  await mongoose.connect(mongoConnection);
 
-  await client.connect();
-  await client.db('expressLibrary').createCollection(newCollectionName);
+  const newGenre = new Genre({ name: req.body.name });
+  await newGenre.save();
 
   res.redirect('http://localhost:3000/');
 });
