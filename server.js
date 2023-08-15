@@ -190,17 +190,6 @@ app.post('/books/:bookId/update', async (req, res) => {
 
   await Book.findOneAndUpdate({ _id: req.params.bookId }, bookData);
   res.redirect('/');
-  /*
-  try {
-    await client.connect();
-    const db = await client.db('expressLibrary');
-    const result = await db.collection(req.body.collection).updateOne({ _id: new ObjectId(req.params.bookId) }, bookData);
-    console.log(result);
-  } catch(e) {
-    console.log(e);
-  }
-  res.redirect('/');
-  */
 });
 
 /*
