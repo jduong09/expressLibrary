@@ -17,9 +17,9 @@ html
         aside
           button(id= 'btn-collection-new' type= 'button')= 'New Collection'
           ul
-            each collection in collections
+            each genre in genres
               li(class= 'li-collection')
-                button(class='btn-collection' data-collection-name=`${collection}`)= collection
+                button(class='btn-collection' data-collection-name=`${genre}`)= genre
         div(class= 'wrapper-books')
           div(id= 'books-header')
             h2(id= `header-collection`)= currentCollection

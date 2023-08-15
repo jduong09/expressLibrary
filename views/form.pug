@@ -20,9 +20,16 @@ html
             input(type= 'text' id= 'input-author' name= 'author' placeholder= 'Agatha Cristie' value= book ? book.author : '')
           label(for= 'input-pages')= 'Pages: '
             input(type= 'number' id= 'input-pages' name= 'pages' placeholder= '256' value= book ? book.pages : '')
-          label(for= "collections-select")= 'Choose a collection: '
-            select(name= "collection" id= "collections-select")
+          label(for= 'input-isbn')= 'ISBN Number: '
+            input(type= 'text' id= 'input-isbn' name= 'isbn' placeholder= 'B000FC1RCI' value= book ? book.isbn : '')
+          label(for= "genres-select")= 'Choose a Genre: '
+            select(name= "genre" id= "genres-select")
               option(value= "")= '--Please choose an option--'
-              each collection in collections
-                option(value= collection)= collection
+              option(value= "" id="genre-new")= '--Add New Genre --'
+              each genre in genres
+                option(value= genre)= genre
+          label(for= 'input-genre')= 'Genre: '
+            input(type= 'text' id= 'input-genre' name= 'newGenre' placeholder= 'Fiction, Non-fiction, etc...')
+          label(for= 'textarea-summary')= 'Summary: '
+            textarea(id= 'textarea-summary' name= 'summary', cols="30", rows="10")= 'Book summary goes here...'
           button(type= 'submit' id= 'btn-submit')= book ? 'Update Book' : 'Add Book'
