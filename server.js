@@ -6,7 +6,7 @@ const Genre = require('./models/genre');
 const Book = require('./models/book');
 
 
-const collectionRouter = require('./routes/collection');
+const genresRouter = require('./routes/genres');
 
 const app = express();
 const port = 3000;
@@ -17,9 +17,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
 // Database Name: 'expressLibrary'
-// Collection: 'Fiction'
-// Collection: 'NonFiction'
-// Collection: 'Autobiography'
 // Create 
 app.post('/book/new', async (req, res) => {
   await mongoose.connect(mongoConnection);
@@ -34,14 +31,15 @@ app.post('/book/new', async (req, res) => {
       author = await newAuthor.save();
     }
     // Find Genre instance in database first
-    if (!Genre.find({ name: req.body.genre }).query) {
+    if (!Genre.findOne({ name: req.body.genre })) {
       const newGenre = new Genre({
         name: req.body.newGenre
       });
       genre = await newGenre.save();
+    } else {
+      genre = await Genre.findOne({ name: req.body.genre });
     }
 
-    console.log(req.body);
     const newBook = new Book({
       title: req.body.title,
       author: author._id,
@@ -60,7 +58,6 @@ app.post('/book/new', async (req, res) => {
 });
 
 // Read
-
 // Query All Books
 app.get('/', async (req, res) => {
   await mongoose.connect(mongoConnection);
@@ -70,8 +67,8 @@ app.get('/', async (req, res) => {
   // Getting all books in specific collection
   let arrayBooks;
 
-  if (req.query.collection) {
-    const genre = await Genre.findOne({ name: req.query.collection });
+  if (req.query.genre) {
+    const genre = await Genre.findOne({ name: req.query.genre });
     const allBooksByGenre = await Book.find({ genre: [genre._id] })
     arrayBooks = await Promise.all(allBooksByGenre.map(async (book) => {
       const author = await Author.findById(book.author)
@@ -99,65 +96,101 @@ app.get('/', async (req, res) => {
       }
     }));
   }
-  await res.render('index', { title: 'Library', books: arrayBooks, genres: namesOfGenres, currentCollection: req.query.collection || 'Books' });
+  res.render('index', { title: 'Library', books: arrayBooks, genres: namesOfGenres, currentGenre: req.query.genre || 'Books' });
 });
 
 
 // Get New Book Form
 app.get('/book/new', async (req, res) => {
-  /*
-  await db.listCollections().toArray().then(data => {
-    data.forEach(collection => collectionNames.push(collection.name));
+  await mongoose.connect(mongoConnection);
+  const genres = await Genre.find({}).then((data) => {
+    return data.map(genre => {
+      return genre.name;
+    });
   });
-  */
 
-  await res.render('form', { title: 'New Book', formTitle: 'New Book', genres: [] });
+  res.render('form', { title: 'New Book', formTitle: 'New Book', genres });
 });
-
-/*
 
 // Get book update Form
 app.get('/books/:bookId/update', async (req, res) => {
-  await client.connect();
-
-  const db = await client.db('expressLibrary');
-  const collectionNames = [];
-  await db.listCollections().toArray().then(data => {
-    data.forEach(collection => {
-      collectionNames.push(collection.name);
+  await mongoose.connect(mongoConnection);
+  
+  const genres = await Genre.find({}).then((data) => {
+    return data.map(genre => {
+      return genre.name;
     });
-
   });
 
-  let bookResult;
-  for (let i = 0; i < collectionNames.length; i++) {
-    const result = await db.collection(collectionNames[i]).findOne({ _id: new ObjectId(req.params.bookId )});
-    if (result) {
-      bookResult = {
-        id: result._id.toString(),
-        title: result.title,
-        author: result.author,
-        pages: result.pages,
-        collection: collectionNames[i]
-      };
-    }
-  }
+  const bookToUpdate = await Book.findOne({ _id: req.params.bookId }).then(async (data) => {
+    const author = await Author.findById(data.author).then((response) => {
+      return `${response.first_name} ${response.family_name}`;
+    });
+    const genre = await Genre.findById(data.genre[0]).then((response) => response.name);
 
-  res.render('form', { title: 'Update Book', formTitle: 'Update Book', book: bookResult, collections: collectionNames });
+    return {
+      id: data._id.toString(),
+      title: data.title,
+      author,
+      summary: data.summary,
+      isbn: data.isbn,
+      pages: data.pages,
+      genre: [genre]
+    };
+  });
+  res.render('form', { title: 'Update Book', formTitle: 'Update Book', book: bookToUpdate, genres });
 });
 
 // Update
 app.post('/books/:bookId/update', async (req, res) => {
-  const bookData = {
-    $set: {
-      title: req.body.title,
-      author: req.body.author,
-      pages: req.body.pages,
+  /*
+  {
+    title: 'And Then There Were None',
+    author: 'Agatha Christie',
+    pages: '256',
+    isbn: 'B000FC0109',
+    genre: '',
+    newGenre: '',
+    Fiction: 'on',
+    summary: 'Book summary goes here...'
+  }
+*/
+  await mongoose.connect(mongoConnection);
+
+  const author = await Author.findOne({
+    first_name: req.body.author.split(" ")[0],
+    family_name: req.body.author.split(" ")[1]
+  });
+
+  const listOfGenres = await Genre.find({});
+  const updatedGenresList = [];
+
+  listOfGenres.map((itemGenre) => {
+    if (req.body[itemGenre.name]) {
+      updatedGenresList.push(itemGenre._id.toString());
     }
+  });
+
+  if (req.body.newGenre) {
+    updatedGenresList.push(req.body.newGenre);
+  }
+
+  if (req.body.genre) {
+    updatedGenresList.push(req.body.genre);
+  }
+
+  const bookData = {
+    title: req.body.title,
+    author: author._id.toString(),
+    pages: req.body.pages,
+    isbn: req.body.isbn,
+    genre: updatedGenresList,
+    summary: req.body.summary,
   };
 
-  console.log(bookData);
-
+  await Book.findOneAndUpdate({ _id: req.params.bookId }, bookData);
+  res.redirect('/');
+  /*
   try {
     await client.connect();
     const db = await client.db('expressLibrary');
@@ -166,9 +199,11 @@ app.post('/books/:bookId/update', async (req, res) => {
   } catch(e) {
     console.log(e);
   }
-
   res.redirect('/');
+  */
 });
+
+/*
 // Delete
 app.delete('/books/:bookId', async (req, res) => {
   await client.connect();
@@ -178,7 +213,7 @@ app.delete('/books/:bookId', async (req, res) => {
   res.json({ message: 'success' });
 });
 */
-app.use('/collections', collectionRouter);
+app.use('/genres', genresRouter);
 
 // Listen Port
 app.listen(port, () => {

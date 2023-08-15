@@ -8,6 +8,7 @@ html
     title= title
     link(rel= 'stylesheet' type= 'text/css' href= '../../css/meyers_reset.css')
     link(rel= 'stylesheet' type= 'text/css' href= '../../css/styles.css')
+    script(type= 'text/javascript' src= '../js/form.js')
   body
     header
       h1= formTitle
@@ -24,12 +25,16 @@ html
             input(type= 'text' id= 'input-isbn' name= 'isbn' placeholder= 'B000FC1RCI' value= book ? book.isbn : '')
           label(for= "genres-select")= 'Choose a Genre: '
             select(name= "genre" id= "genres-select")
-              option(value= "")= '--Please choose an option--'
-              option(value= "" id="genre-new")= '--Add New Genre --'
+              option(value= "" selected)= '--Please choose an option--'
+              option(value= "" id="genre-new")= '--Add New Genre --' 
               each genre in genres
                 option(value= genre)= genre
-          label(for= 'input-genre')= 'Genre: '
+          label(for= 'input-genre' id= 'label-input-genre' class= 'hide')= 'Genre: '
             input(type= 'text' id= 'input-genre' name= 'newGenre' placeholder= 'Fiction, Non-fiction, etc...')
+          if book.genre
+            each prevGenre in book.genre
+              label(for = `input-${prevGenre}`)= `${prevGenre}: `
+                input(type= 'checkbox' id= `input-${prevGenre}` name= prevGenre checked)
           label(for= 'textarea-summary')= 'Summary: '
-            textarea(id= 'textarea-summary' name= 'summary', cols="30", rows="10")= 'Book summary goes here...'
+            textarea(id= 'textarea-summary' name= 'summary', cols="30", rows="10")= book ? book.summary : 'Book summary goes here...'
           button(type= 'submit' id= 'btn-submit')= book ? 'Update Book' : 'Add Book'

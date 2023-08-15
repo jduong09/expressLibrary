@@ -1,19 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const btnCollectionNew = document.getElementById('btn-collection-new');
+  const btnGenreNew = document.getElementById('btn-genre-new');
   const btnBookNew = document.getElementById('btn-book-new');
   const btnsEdit = document.getElementsByClassName('btn-edit');
   const btnsDelete = document.getElementsByClassName('btn-delete');
-  const btnsCollection = document.getElementsByClassName('btn-collection');
+  const btnsGenre = document.getElementsByClassName('btn-genre');
   const divBackground = document.getElementById('div-background');
 
-  // const btnSubmit = document.getElementById('btn-submit');
-  btnCollectionNew.addEventListener('click', (e) => {
+  btnGenreNew.addEventListener('click', (e) => {
     e.preventDefault();
     const modalCollection = document.getElementById('div-modal-collection');
 
     modalCollection.classList.remove('hide');
     divBackground.classList.remove('hide');
-    // open Collection modal?
   });
 
   btnBookNew.addEventListener('click', (e) => {
@@ -52,13 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  for (let k = 0; k < btnsCollection.length; k++) {
-    btnsCollection[k].addEventListener('click', (e) => {
+  for (let k = 0; k < btnsGenre.length; k++) {
+    btnsGenre[k].addEventListener('click', (e) => {
       e.preventDefault();
 
-      const collectionName = e.currentTarget.getAttribute('data-collection-name');
+      const genreName = e.currentTarget.getAttribute('data-genre-name');
       console.log('making fetch request');
-      window.location = (`/?collection=${collectionName}`);
+      window.location = (`/?genre=${genreName}`);
     });
   }
 });

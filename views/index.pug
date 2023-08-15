@@ -8,21 +8,21 @@ html
     title= title
     link(rel= 'stylesheet' type= 'text/css' href= './css/meyers_reset.css')
     link(rel= 'stylesheet' type= 'text/css' href= './css/styles.css')
-    script(type= 'text/javascript' src='eventListeners.js')
+    script(type= 'text/javascript' src='./js/index.js')
   body
     div(class= 'div-wrapper')
       header
         h1= 'expressLibrary'
       main
         aside
-          button(id= 'btn-collection-new' type= 'button')= 'New Collection'
+          button(id= 'btn-genre-new' type= 'button')= 'New Genre'
           ul
             each genre in genres
-              li(class= 'li-collection')
-                button(class='btn-collection' data-collection-name=`${genre}`)= genre
+              li(class= 'li-genre')
+                button(class='btn-genre' data-genre-name=`${genre}`)= genre
         div(class= 'wrapper-books')
           div(id= 'books-header')
-            h2(id= `header-collection`)= currentCollection
+            h2(id= `header-collection`)= currentGenre
             button(id= 'btn-book-new' type= 'button')= 'New Book'
           div(class= 'container-books')
             ul
@@ -35,9 +35,9 @@ html
                     button(class= 'btn-edit' type= 'button')= 'Edit'
                     button(class= 'btn-delete' type= 'button')= 'Delete'
         div(id= 'div-modal-collection' class= 'hide')
-          h3= 'New Collection'
-          form(id= 'form-collection-create' method= 'POST' action= '/collections/new')
-            label(for= 'input-collection-name')= 'Name: '
-              input(type= 'text' id= 'input-collection-name' name= 'name' placeholder= 'Fiction, Non-fiction...')
-            button(type = 'submit' id='btn-submit')= 'Add Collection'
+          h3= 'New Genre'
+          form(id= 'form-genre-create' method= 'POST' action= '/genres/new')
+            label(for= 'input-genre-name')= 'Name: '
+              input(type= 'text' id= 'input-genre-name' name= 'name' placeholder= 'Fiction, Non-fiction...')
+            button(type = 'submit' id='btn-submit')= 'Add Genre'
     div(id= 'div-background' class= 'hide')= ''

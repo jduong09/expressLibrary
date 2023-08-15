@@ -5,10 +5,10 @@ const Genre = require('../models/genre');
 
 const mongoConnection = process.env.uri;
 
-const collectionsRouter = express.Router();
+const genresRouter = express.Router();
 
 // Create
-collectionsRouter.post('/new', async (req, res) => {
+genresRouter.post('/new', async (req, res) => {
   await mongoose.connect(mongoConnection);
 
   const newGenre = new Genre({ name: req.body.name });
@@ -16,8 +16,7 @@ collectionsRouter.post('/new', async (req, res) => {
 
   res.redirect('http://localhost:3000/');
 });
-// Read
 // Update
 // Delete
 
-module.exports = collectionsRouter;
+module.exports = genresRouter;
