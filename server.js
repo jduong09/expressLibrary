@@ -41,11 +41,14 @@ app.post('/book/new', async (req, res) => {
       });
       genre = await newGenre.save();
     }
+
+    console.log(req.body);
     const newBook = new Book({
       title: req.body.title,
       author: author._id,
       summary: req.body.summary,
       isbn: req.body.isbn,
+      pages: req.body.pages,
       genre: [genre._id]
     });
     await newBook.save();
@@ -74,10 +77,10 @@ app.get('/', async (req, res) => {
     return genre.name;
   })
   const allBooks = await Book.find({});
-
-  const arrayBooks = await allBooks.map(async (book) => {
+  
+  const arrayBooks = await Promise.all(allBooks.map(async (book) => {
     const author = await Author.findById(book.author).then((data) => {
-      return data.first_name;
+      return `${data.first_name} ${data.family_name}`;
     });
     return {
       uuid: book._id.toString(),
@@ -85,9 +88,7 @@ app.get('/', async (req, res) => {
       author: author,
       pages: book.pages,
     }
-  });
-
-  console.log(arrayBooks);
+  }));
   /*
   // Getting all books in specific collection
 
