@@ -20,6 +20,7 @@ app.use(express.static(__dirname));
 // Create 
 app.post('/book/new', async (req, res) => {
   await mongoose.connect(mongoConnection);
+  console.log(req.body);
   try {
     // Find Author instance in database first
     let author, genre;
@@ -31,15 +32,18 @@ app.post('/book/new', async (req, res) => {
       author = await newAuthor.save();
     }
     // Find Genre instance in database first
-    if (!Genre.findOne({ name: req.body.genre })) {
-      const newGenre = new Genre({
-        name: req.body.newGenre
+    genre = await Genre.findOne({ name: req.body.genre })
+      .then((data) => {
+        if (!data) {
+          const newGenre = new Genre({
+            name: req.body.newGenre
+          });
+          return newGenre.save();
+        } else {
+          return data;
+        }
       });
-      genre = await newGenre.save();
-    } else {
-      genre = await Genre.findOne({ name: req.body.genre });
-    }
-
+    
     const newBook = new Book({
       title: req.body.title,
       author: author._id,
@@ -64,6 +68,7 @@ app.get('/', async (req, res) => {
   // Aside will show all genres.
   const allGenres = await Genre.find({});
   const namesOfGenres = allGenres.map(genre => genre.name);
+
   // Getting all books in specific collection
   let arrayBooks;
 
@@ -143,18 +148,6 @@ app.get('/books/:bookId/update', async (req, res) => {
 
 // Update
 app.post('/books/:bookId/update', async (req, res) => {
-  /*
-  {
-    title: 'And Then There Were None',
-    author: 'Agatha Christie',
-    pages: '256',
-    isbn: 'B000FC0109',
-    genre: '',
-    newGenre: '',
-    Fiction: 'on',
-    summary: 'Book summary goes here...'
-  }
-*/
   await mongoose.connect(mongoConnection);
 
   const author = await Author.findOne({
@@ -192,16 +185,39 @@ app.post('/books/:bookId/update', async (req, res) => {
   res.redirect('/');
 });
 
-/*
+// Current: Deleting one book causes the book to be deleted, but if the author doesn't have a book, shouldnt the author be deleted as well. (yes)
+// Current: Deleting one book causes the book to be deleted, but if the genre only has one book, shouldnt the genre be deleted as well. (no)
 // Delete
 app.delete('/books/:bookId', async (req, res) => {
-  await client.connect();
-  const db = await client.db('expressLibrary');
-  await db.deleteOne({ _id: new ObjectId(req.params.bookId) });
+  await mongoose.connect(mongoConnection);
+
+  const bookToDelete = await Book.findById(req.params.bookId);
+  /* 
+  {
+    _id: new ObjectId("64db91ece385753a1682a0df"),
+    title: 'And Then There Were None',
+    author: new ObjectId("64db91ece385753a1682a0db"),
+    summary: 'This is updated summary.',
+    isbn: 'B000FC0109',
+    pages: 240,
+    genre: [ new ObjectId("64db91ece385753a1682a0dd") ],
+    __v: 0
+  }
+  */
+  const author = await Author.findById(bookToDelete.author);
+  const booksOfAuthor = await Book.where({ author: author._id }).countDocuments();
+
+  // If there are more books of the author in the library, then do not delete author from database
+  if (booksOfAuthor > 1) {
+    await Book.deleteOne({ _id: req.params.bookId });
+  } else {
+    await Book.deleteOne({ _id: req.params.bookId });
+    await Author.deleteOne({ _id: author._id });
+  }
 
   res.json({ message: 'success' });
 });
-*/
+
 app.use('/genres', genresRouter);
 
 // Listen Port

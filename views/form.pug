@@ -18,7 +18,7 @@ html
           label(for= 'input-title')= 'Title: '
             input(type= 'text' id= 'input-title' name= 'title' placeholder= 'And Then There Were None' value= book ? book.title : '')
           label(for= 'input-author')= 'Author: '
-            input(type= 'text' id= 'input-author' name= 'author' placeholder= 'Agatha Cristie' value= book ? book.author : '')
+            input(type= 'text' id= 'input-author' name= 'author' placeholder= 'Agatha Cristie' value= book ? book.author : '' readonly= book ? 'readonly' : false)
           label(for= 'input-pages')= 'Pages: '
             input(type= 'number' id= 'input-pages' name= 'pages' placeholder= '256' value= book ? book.pages : '')
           label(for= 'input-isbn')= 'ISBN Number: '
@@ -31,7 +31,7 @@ html
                 option(value= genre)= genre
           label(for= 'input-genre' id= 'label-input-genre' class= 'hide')= 'Genre: '
             input(type= 'text' id= 'input-genre' name= 'newGenre' placeholder= 'Fiction, Non-fiction, etc...')
-          if book.genre
+          if book
             each prevGenre in book.genre
               label(for = `input-${prevGenre}`)= `${prevGenre}: `
                 input(type= 'checkbox' id= `input-${prevGenre}` name= prevGenre checked)
